@@ -339,7 +339,7 @@ The board structures use matching `[x][y]` indices. In the button layout, the fi
 ```mermaid
 flowchart TD
     user[User] -->|Left Click| click["click(x, y)"]
-    click --> reveal["reveal(x, y)"]
+    click -->|Reveal| reveal["reveal(x, y)"]
     reveal -->|If first_move| mines["place_mines(x, y)"]
     reveal -->|If first_move| timer["start_timer()"]
     reveal -->|Updates| state[Shared Game State]
