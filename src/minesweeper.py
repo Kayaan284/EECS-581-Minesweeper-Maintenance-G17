@@ -256,36 +256,57 @@ def easy_solver():
         if not done:
             check_win()
 
-def medium_solver():
-    if not medium_rules():
-        #print("Medium -> Fallback to easy solver")
-        easy_solver()
+#Authored by Mo Osby and Noah Mast, updated by Drew Franke for hard solver
+def medium_solver(fallback=True):
+    if done:
+        return False
+    # Track progress for medium if none then use easy solver to randomly reveal cells
+    made_progress = False # bare return
 
-def medium_rules():
-# I generated this with Claude (sonnet 5.5) for testing purposes with the hard solver - Drew
-    can_flag = calculate_remaining_flags() > 0
     for x in range(N):
         for y in range(N):
-            if not r[x][y] or a[x][y] <= 0:
+            if not r[x][y] or a[x][y] <=0: #if not revealed or no adjacent mines
                 continue
-            hidden = hidden_set(x, y)
-            flagged = [c for c in hidden if f[c[0]][c[1]]]
-            unflagged = [c for c in hidden if not f[c[0]][c[1]]]
-            if not unflagged:
-                continue  # nothing left to do around this cell
- 
-            if len(hidden) == a[x][y] and can_flag:   # Rule 1
-                place_flag(*unflagged[0])
-                #print(f"Flagged {unflagged[0]} using Rule 1")
-                return True
-            if len(flagged) == a[x][y]:               # Rule 2
-                reveal(*unflagged[0])
-                after_ai_reveal()
-                #print(f"Revealed {unflagged[0]} using Rule 2")
-                return True
-    return False
+            # Find all hidden neighbors of the current cell
+            # (i,j) is the cell and (x,y) is the current cell
+            neighbors = [(i,j)
+                                for i in range(max(0,x-1), min(N, x+2))
+                                for j in range(max(0,y-1), min(N, y+2))
+                                if (i,j)!=(x,y) # (i,j) is the cell and (x,y) is the current cell
+                                ]
+            # Count hidden neighbors
+            flagged_neighbors = [(i,j) for i,j in neighbors if f[i][j]]
+            unflagged_neighbors = [(i,j) for i,j in neighbors if not f[i][j] and not r[i][j]]
 
+            hidden_neighbors = (len(flagged_neighbors) + len(unflagged_neighbors))
 
+            #if hidden neighbor count equals the number of adjacent mines, flag them
+            if hidden_neighbors == a[x][y]:
+                for i,j in unflagged_neighbors:
+                    if done:
+                        return made_progress # bare return
+                    if calculate_remaining_flags() > 0:
+                        flag(i, j, None)
+                        made_progress = True
+
+            # Reveals neighbors if number of neighbors = the cell's mine count
+            if len(flagged_neighbors) == a[x][y]:
+                # Reveals all unflagged neighbors
+                for (i,j) in unflagged_neighbors:
+                    if done:
+                        return
+
+                    click(i, j)
+
+                    made_progress = True
+
+    if not done:
+        check_win()
+
+    if fallback and not done and not made_progress:
+        easy_solver()
+
+    return made_progress
 
 # ----- various helpers for hard mode solver -----
 #all assoicated functions written by hand with the help of VScode inline suggestions
@@ -361,7 +382,7 @@ def hard_solver():
         return
     if one_two_one_solver():
         return
-    if medium_rules():
+    if medium_solver(fallback=False):
         return
     else:
         #print("Hard -> Fallback to easy solver")
