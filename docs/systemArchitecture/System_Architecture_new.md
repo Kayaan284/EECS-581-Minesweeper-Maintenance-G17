@@ -498,9 +498,9 @@ Code attribution must remain in the relevant source files. File prologues must i
 
 #### How we got our estimates:
 
-We made informal estimates based on how difficult we expected each member's assigned work to be and how long we thought implementation, documentation, and testing would take. These were rough guesses rather than estimates calculated using a formal model. Estimates were recorded as totals for each member's work; separate task estimates were not available for members with multiple entries.
+We used planning poker to discuss and estimate the effort required for each task. Team members selected Fibonacci values to represent relative effort, considering complexity, uncertainty, and testing needs. We discussed differences between selections and agreed on an effort estimate, then translated that estimate into expected person-hours. Fibonacci values represented relative effort rather than hours directly.
 
-Actual hours were collected from team members' work reports in the Discord chat. Each report identified the work completed and the time spent. EECS 581 lecture time is excluded.
+Actual hours were collected separately from team members' work reports in the Discord chat.Each report identified the work completed and the time spent. EECS 581 lecture time is excluded.
 
 #### Group Meetings: Approximately 2–3 hours of meeting duration
 
