@@ -1,16 +1,17 @@
 #  CLASS:        EECS 581 Fall 2026
-#  PROJECT:         Project 1 - Minesweeper
+#  PROJECT:         Project 2 - Maintenance
 #  FILE:            minesweeper.py
 #
 #  DESCRIPTION:     Implements the Minesweeper game, including board setup, gameplay logic, mine
-#                   flagging, win/loss conditions, and the Tkinter graphical user interface.
+#                   flagging, win/loss conditions, and the Tkinter graphical user interface. Additions for
+#                   project 2 include autosolve, ai taking turn on click, and timer.
 #
 #  INPUT:           Player mouse input for uncovering and flagging cells.
 #  OUTPUT:          Displays the Minesweeper board, cell states, and game results through the
 #                   graphical user interface.
 #
 #  COLLABORATORS:   Liam Kinghouser, Gael Salazar-Morales, Joshua Fakunmoju, Carter Ruff, Gabriel Haro-Villa
-#  MAINTAINERS/COLLABORATORS: Alex Lanter, Davina Love, Vrishank Kulkarni, Drew Franke
+#  MAINTAINERS/COLLABORATORS: Alex Lanter, Davina Love, Vrishank Kulkarni, Drew Franke, Mo Osby, Noah Mast
 #
 #  SOURCES:         GitHub Copilot 1.0.85 (Used in place_mines() as well as general guidance), Claude (Autosolve loop)
 #
