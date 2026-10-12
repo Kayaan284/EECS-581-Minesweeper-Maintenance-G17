@@ -38,6 +38,15 @@ f = [[False] * N for _ in range(N)] #Tracks flags
 done = False                #Indicate if the game is finished
 first_move = True         
 auto_next = None            #Store return value of root.after() for autosolve loop
+ai_turn = False             #True while an AI solver is making moves, False otherwise
+
+def run_ai(solver):
+    global ai_turn
+    ai_turn = True
+    try:
+        solver()
+    finally:
+        ai_turn = False
 
 #Set time reminaing to GAME_TIMER constant
 time_remaining = GAME_TIMER
@@ -90,7 +99,10 @@ def lose(message, exploded_cell=None):
                 color = "red" if (x, y) == exploded_cell else "lightGray"
                 btns[x][y].config(text="💥", bg=color, fg="black")
 
-    game_status.config(text="Status: Game Over: Loss")
+    if ai_turn or (exploded_cell is None and auto_next is not None):
+        game_status.config(text="Status: Game Over: AI Loss")
+    else:
+        game_status.config(text="Status: Game Over: Player Loss")
     if tk.messagebox.askyesno("Minesweeper", f"{message} Play again?"):
         reset()
     else:
@@ -151,8 +163,12 @@ def check_win():
     if not done and winCon:
         done = True
         stop_timer()
-        game_status.config(text="Status: Victory") # Sets the game status to 'Victory' when the player wins
-        tk.messagebox.showinfo("Minesweeper", "You win!")
+        if ai_turn:
+            game_status.config(text="Status: AI Victory")
+            tk.messagebox.showinfo("Minesweeper", "AI wins!")
+        elif not ai_turn:
+            game_status.config(text="Status: Player Victory")
+            tk.messagebox.showinfo("Minesweeper", "Player wins!")
         root.destroy()  # closes the game window
 
 def click(x, y):
@@ -294,7 +310,7 @@ def medium_solver(fallback=True):
                 # Reveals all unflagged neighbors
                 for (i,j) in unflagged_neighbors:
                     if done:
-                        return
+                        return made_progress # bare return
 
                     click(i, j)
 
@@ -402,12 +418,11 @@ def auto_step(solver): #One autosolve step. Do the move, check for win, schedule
     if done:
         return
 
-    solver()#Do move as called
+    run_ai(solver)#Do move as called
 
     if done or first_move: #If game was reset or done solving stop
         return
 
-    check_win() #Currently redundant for easy since I added check_win to it
     if done:
         return
 
@@ -466,10 +481,10 @@ for r_index in range(N):
 
 tk.Button(root, text="Reset", command=reset).grid(row=N + 1, column=0, columnspan=N + 1, sticky="ew")
 
-tk.Button(root, text="Easy Mode", command = easy_solver).grid(row=N + 5, column=0, columnspan=N + 1, sticky="ew")
-tk.Button(root, text="Medium Mode", command = medium_solver).grid(row=N + 6, column=0, columnspan=N + 1, sticky="ew")
-tk.Button(root, text="Hard Mode", command = hard_solver).grid(row=N + 7, column=0, columnspan=N + 1, sticky="ew")
-tk.Button(root, text="Autosolve", command = automatic_play).grid(row=N + 8, column=0, columnspan=N + 1, sticky="ew")
+tk.Button(root, text="Easy Mode", command = lambda: run_ai(easy_solver)).grid(row=N + 5, column=0, columnspan=N + 1, sticky="ew")
+tk.Button(root, text="Medium Mode", command = lambda: run_ai(medium_solver)).grid(row=N + 6, column=0, columnspan=N + 1, sticky="ew")
+tk.Button(root, text="Hard Mode", command = lambda: run_ai(hard_solver)).grid(row=N + 7, column=0, columnspan=N + 1, sticky="ew")
+tk.Button(root, text="Autosolve", command = lambda: run_ai(automatic_play)).grid(row=N + 8, column=0, columnspan=N + 1, sticky="ew")
 
 remaining_flags_label = tk.Label(root, text=f"Remaining flags: {calculate_remaining_flags()}") # Create label to show remaining flag count
 remaining_flags_label.grid(row=N + 3, column = 0, columnspan = N + 2) # Set label position
