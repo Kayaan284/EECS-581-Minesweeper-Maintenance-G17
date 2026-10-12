@@ -10,10 +10,9 @@
 #                   graphical user interface.
 #
 #  COLLABORATORS:   Liam Kinghouser, Gael Salazar-Morales, Joshua Fakunmoju, Carter Ruff, Gabriel Haro-Villa
-#  MAINTAINERS/COLLABORATORS: Alex Lanter, Davina Love, Vrishank Kulkarni, Drew Franke, Mo Osby, Noah Mast
+#  MAINTAINERS/COLLABORATORS: Alex Lanter, Davina Love, Vrishank Kulkarni, Drew Franke
 #
-#  SOURCES:         GitHub Copilot 1.0.85 (Used in place_mines() as well as general guidance)
-#  SOURCES:         Claude (Autosolve loop), VSCode inline suggestions (general guidance)
+#  SOURCES:         GitHub Copilot 1.0.85 (Used in place_mines() as well as general guidance), Claude (Autosolve loop)
 #
 #  AUTHOR:          Pruthviraj Sadhankar
 #  CREATION DATE:   09/13/2026
@@ -277,53 +276,47 @@ def easy_solver():
 def medium_solver(fallback=True):
     if done:
         return False
-    # Track progress for medium if none then use easy solver to randomly reveal cells
-    made_progress = False # bare return
 
     for x in range(N):
         for y in range(N):
-            if not r[x][y] or a[x][y] <=0: #if not revealed or no adjacent mines
+            if not r[x][y] or a[x][y] <= 0:  # skip unrevealed cells or cells with no adjacent mines
                 continue
-            # Find all hidden neighbors of the current cell
-            # (i,j) is the cell and (x,y) is the current cell
-            neighbors = [(i,j)
-                                for i in range(max(0,x-1), min(N, x+2))
-                                for j in range(max(0,y-1), min(N, y+2))
-                                if (i,j)!=(x,y) # (i,j) is the cell and (x,y) is the current cell
-                                ]
-            # Count hidden neighbors
-            flagged_neighbors = [(i,j) for i,j in neighbors if f[i][j]]
-            unflagged_neighbors = [(i,j) for i,j in neighbors if not f[i][j] and not r[i][j]]
 
-            hidden_neighbors = (len(flagged_neighbors) + len(unflagged_neighbors))
+            # (i, j) is a neighbor and (x, y) is the current cell
+            nbrs = neighbors(x, y)
 
-            #if hidden neighbor count equals the number of adjacent mines, flag them
+            flagged_neighbors = [(i, j) for i, j in nbrs if f[i][j]]
+            unflagged_neighbors = [(i, j) for i, j in nbrs if not f[i][j] and not r[i][j]]
+
+            if not unflagged_neighbors:
+                continue  # nothing left to act on around this cell
+
+            hidden_neighbors = len(flagged_neighbors) + len(unflagged_neighbors)
+
+            # Rule 1: hidden neighbor count equals the cell's number, so flag all hidden neighbors
             if hidden_neighbors == a[x][y]:
-                for i,j in unflagged_neighbors:
-                    if done:
-                        return made_progress # bare return
+                flagged_any = False
+                for i, j in unflagged_neighbors:
                     if calculate_remaining_flags() > 0:
                         flag(i, j, None)
-                        made_progress = True
+                        flagged_any = True
+                if flagged_any:
+                    return True  # flagging is the AI's turn, so stop here
+                continue  # no flags left, move to next cell
 
-            # Reveals neighbors if number of neighbors = the cell's mine count
+            # Rule 2: flagged neighbors equal the cell's number, so open all other hidden neighbors
             if len(flagged_neighbors) == a[x][y]:
-                # Reveals all unflagged neighbors
-                for (i,j) in unflagged_neighbors:
+                for i, j in unflagged_neighbors:
                     if done:
-                        return made_progress # bare return
+                        return True
+                    click(i, j)   # click() already calls check_win()
+                return True       # opening the neighbors is the AI's turn, so stop here
 
-                    click(i, j)
-
-                    made_progress = True
-
-    if not done:
-        check_win()
-
-    if fallback and not done and not made_progress:
+    # No rule applied anywhere: pick a random hidden cell
+    if fallback and not done:
         easy_solver()
 
-    return made_progress
+    return False
 
 # ----- various helpers for hard mode solver -----
 #all assoicated functions written by hand with the help of VScode inline suggestions
@@ -424,9 +417,6 @@ def auto_step(solver): #One autosolve step. Do the move, check for win, schedule
     if done or first_move: #If game was reset or done solving stop
         return
 
-    if done:
-        return
-
     # Stop if only flagged cells are left to reveal
     if not any(not r[i][j] and not f[i][j] for i in range(N) for j in range(N)):
         return
@@ -460,13 +450,10 @@ def automatic_play(): #Function for popup and selecting autosolve
 
     popup.grab_set() #Makes board unable to be clicked while autosolve popup is open
 
-# def interactive_play():
-    # The goal is to keep track of who's turn it is and allow the player to select an interactive mode with the AI solvers 
-    # or an automatic solver that just plays the whole game completely on its own 
-
-def not_yet():
+""" No longer used
+def not_yet(): 
     tk.messagebox.showinfo(title=None, message="Not Implemented")          
-
+"""
 
 
 btns = [[tk.Button(root, width=2, height=1, font=("Arial", 12)) for _ in range(N)] for _ in range(N)]
