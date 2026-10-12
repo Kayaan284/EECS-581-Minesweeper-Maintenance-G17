@@ -10,9 +10,10 @@
 #                   graphical user interface.
 #
 #  COLLABORATORS:   Liam Kinghouser, Gael Salazar-Morales, Joshua Fakunmoju, Carter Ruff, Gabriel Haro-Villa
-#  MAINTAINERS/COLLABORATORS: Alex Lanter, Davina Love, Vrishank Kulkarni, Drew Franke
+#  MAINTAINERS/COLLABORATORS: Alex Lanter, Davina Love, Vrishank Kulkarni, Drew Franke, Mo Osby, Noah Mast
 #
-#  SOURCES:         GitHub Copilot 1.0.85 (Used in place_mines() as well as general guidance), Claude (Autosolve loop)
+#  SOURCES:         GitHub Copilot 1.0.85 (Used in place_mines() as well as general guidance)
+#  SOURCES:         Claude (Autosolve loop), VSCode inline suggestions (general guidance)
 #
 #  AUTHOR:          Pruthviraj Sadhankar
 #  CREATION DATE:   09/13/2026
