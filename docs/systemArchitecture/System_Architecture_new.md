@@ -338,14 +338,14 @@ The board structures use matching `[x][y]` indices. In the button layout, the fi
 
 ```mermaid
 flowchart TD
-    user[User] -->|Left Click| click["click(x, y)"]
-    click -->|Reveal| reveal["reveal(x, y)"]
-    reveal -->|If first_move| mines["place_mines(x, y)"]
-    reveal -->|If first_move| timer["start_timer()"]
-    reveal -->|Updates| state[Shared Game State]
-    reveal -->|Mine| lose["lose()"]
-    click -->|If game remains active| win["check_win()"]
-    state -->|Displayed Through| screen[Tkinter Interface]
+    A["User"] -->|Left Click| B["click(x, y)"]
+    B -->|Reveal| C["reveal(x, y)"]
+    C -->|If first_move| D["place_mines(x, y)"]
+    C -->|If first_move| E["start_timer()"]
+    C -->|Updates| F["Shared Game State"]
+    C -->|Mine| G["lose()"]
+    B -->|If game remains active| H["check_win()"]
+    F -->|Displayed Through| I["Tkinter Interface"]
 ```
 
 ### Right Click / Flag
