@@ -99,11 +99,11 @@ def lose(message, exploded_cell=None):
                 color = "red" if (x, y) == exploded_cell else "lightGray"
                 btns[x][y].config(text="💥", bg=color, fg="black")
 
-    if ai_turn or (exploded_cell is None and auto_next is not None):
-        game_status.config(text="Status: Game Over: AI Loss")
-    else:
-        game_status.config(text="Status: Game Over: Player Loss")
-    if tk.messagebox.askyesno("Minesweeper", f"{message} Play again?"):
+    ai_loss = ai_turn or (exploded_cell is None and auto_next is not None)
+    who = "AI" if ai_loss else "Player"
+
+    game_status.config(text=f"Status: Game Over: {who} Loss")
+    if tk.messagebox.askyesno("Minesweeper", f"{message} {who} loses. Play again?"):
         reset()
     else:
         root.destroy()
